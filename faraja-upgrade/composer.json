@@ -1,0 +1,16 @@
+{
+  "name": "faraja/hospital-upgrade",
+  "description": "PHP 8.5 and NHIF/eClaims integration starter layer for Faraja Hospital System",
+  "type": "project",
+  "require": {
+    "php": ">=8.5.0",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mysqli": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Faraja\\Nhif\\": "src/Nhif/"
+    }
+  }
+}

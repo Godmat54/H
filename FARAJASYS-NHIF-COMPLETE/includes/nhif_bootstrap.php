@@ -35,7 +35,10 @@ function nhifCurrentUserId(): ?int
 
 function nhifJson(mixed $value): string
 {
-    return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    return json_encode(
+        $value,
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+    );
 }
 
 function nhifAudit(
@@ -49,14 +52,15 @@ function nhifAudit(
 ): void {
     $db = nhifDb();
     $userId = nhifCurrentUserId();
+    $ok = $success ? 1 : 0;
+
     $stmt = $db->prepare(
         'INSERT INTO nhif_audit_log
         (user_id, department, patient_id, visit_id, action_name, http_status, success, message)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
-    $ok = $success ? 1 : 0;
     $stmt->bind_param(
-        'isii si is',
+        'isiisiis',
         $userId,
         $department,
         $patientId,
@@ -66,4 +70,5 @@ function nhifAudit(
         $ok,
         $message
     );
+    $stmt->execute();
 }

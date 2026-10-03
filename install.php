@@ -6,8 +6,8 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-if (PHP_VERSION_ID < 80100) {
-    fwrite(STDERR, "PHP 8.1 or newer is required. Current: " . PHP_VERSION . "\n");
+if (PHP_VERSION !== '8.1.25') {
+    fwrite(STDERR, "This package is targeted to PHP 8.1.25. Current: " . PHP_VERSION . "\n");
     exit(1);
 }
 
@@ -33,6 +33,6 @@ do {
     }
 } while ($db->more_results() && $db->next_result());
 
-echo "NHIF database tables installed successfully.\n";
-echo "Next: configure NHIF_USERNAME, NHIF_PASSWORD and NHIF_FACILITY_CODE.\n";
+echo "NHIF database tables installed successfully for PHP 8.1.25.\n";
+echo "Configure NHIF_USERNAME, NHIF_PASSWORD and NHIF_FACILITY_CODE.\n";
 echo "Then add the links in integration/FACEBOX_LINKS.html to the existing Faraja menus.\n";

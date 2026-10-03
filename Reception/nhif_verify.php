@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once dirname(__DIR__) . '/includes/nhif_bootstrap.php';
+require_once dirname(__DIR__) . '/includes/NhifWorkflow.php';
 
 $db = nhifDb();
 $patientId = (int)($_POST['patient_id'] ?? $_GET['patient_id'] ?? 0);
@@ -59,6 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
 
         $success = strtoupper($authorizationStatus) === 'ACCEPTED';
+
+        if ($success) {
+            nhifSetWorkflowStatus($visitId, 'AUTHORIZED');
+
+            nhifSaveVisitProfile(
+                $patientId,
+                $visitId,
+                [
+                    'first_name' => $data['FirstName'] ?? $data['firstName'] ?? '',
+                    'last_name' => $data['LastName'] ?? $data['lastName'] ?? '',
+                    'gender' => $data['Gender'] ?? $data['gender'] ?? '',
+                    'date_of_birth' => $data['DateOfBirth'] ?? $data['DOB'] ?? '',
+                    'telephone_no' => $data['TelephoneNo'] ?? $data['MobileNo'] ?? '',
+                    'attendance_date' => date('Y-m-d'),
+                    'patient_type_code' => 'OUT',
+                ]
+            );
+        } else {
+            nhifSetWorkflowStatus($visitId, 'VERIFICATION_FAILED');
+        }
+
         $message = $success
             ? 'NHIF member authorized. Authorization No: ' . $authorizationNo
             : 'NHIF did not accept this authorization. Review the returned remarks.';

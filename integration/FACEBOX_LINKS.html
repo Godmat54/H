@@ -1,28 +1,55 @@
 <!--
-Add these links inside the EXISTING Faraja template/menu.
-They intentionally use rel="facebox" so existing Facebox popup behaviour is retained.
-Replace PATIENT_ID and VISIT_ID with the existing PHP variables in your system.
+Use these links inside the EXISTING Faraja template/menu.
+They intentionally use rel="facebox" so the current popup styling is retained.
+Replace PATIENT_ID and VISIT_ID with the real variables used by the existing system.
 -->
 
-<!-- Reception -->
-<a rel="facebox" href="../Reception/nhif_verify.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Verify</a>
-<a rel="facebox" href="../Reception/nhif_card_details.php">NHIF Card Details</a>
+<!-- Reception: NHIF starts here when Payment Mode = NHIF -->
+<a rel="facebox"
+   href="../Reception/nhif_verify.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Verify / Authorize
+</a>
+
+<a rel="facebox"
+   href="../Reception/nhif_card_details.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Card Details
+</a>
 
 <!-- Doctor -->
-<a rel="facebox" href="../Doctor/nhif_preapproval.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Pre-Approval</a>
-<a rel="facebox" href="../Doctor/nhif_referral.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Referral</a>
+<a rel="facebox"
+   href="../Doctor/nhif_encounter.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Patient Details / Diagnosis / Services
+</a>
+
+<a rel="facebox"
+   href="../Doctor/nhif_referral.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Referral
+</a>
 
 <!-- Pharmacy -->
-<a rel="facebox" href="../Pharmacy/nhif_tariff_lookup.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Tariff Lookup</a>
+<a rel="facebox"
+   href="../Pharmacy/nhif_encounter.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Pharmacy
+</a>
 
 <!-- Laboratory -->
-<a rel="facebox" href="../Lab/nhif_services.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Laboratory</a>
+<a rel="facebox"
+   href="../Lab/nhif_encounter.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Laboratory
+</a>
 
 <!-- Dental -->
-<a rel="facebox" href="../Dental/nhif_services.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Dental</a>
+<a rel="facebox"
+   href="../Dental/nhif_encounter.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Dental
+</a>
 
 <!-- Eyes -->
-<a rel="facebox" href="../Eyes/nhif_services.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Eyes</a>
+<a rel="facebox"
+   href="../Eyes/nhif_encounter.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">
+   NHIF Eyes
+</a>
 
-<!-- Admin/Accounts -->
+<!-- Admin / Accounts -->
 <a href="../Admin/nhif_dashboard.php">NHIF / eClaims</a>
+<a href="../Admin/nhif_finalize_claim.php?visit_id=VISIT_ID">Final NHIF eClaim</a>

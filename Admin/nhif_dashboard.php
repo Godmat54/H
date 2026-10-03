@@ -35,7 +35,8 @@ $logs = $db->query(
 
 <p style="margin-top:20px">
 <a href="nhif_sync_tariffs.php">Synchronize Tariffs</a> |
-<a href="nhif_claim.php">Create/Submit Claim</a> |
+<a href="nhif_finalize_claim.php">Final eClaim</a> |
+<a href="nhif_claim.php">Manual Claim Tool</a> |
 <a href="nhif_reconcile.php">Reconcile Claims</a>
 </p>
 

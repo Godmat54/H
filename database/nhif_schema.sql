@@ -35,6 +35,19 @@ CREATE TABLE IF NOT EXISTS nhif_tariffs (
     INDEX idx_tariff_name (item_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS nhif_service_mappings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    department VARCHAR(50) NOT NULL,
+    local_service_code VARCHAR(100) NOT NULL,
+    local_service_name VARCHAR(255) NOT NULL,
+    nhif_item_code VARCHAR(50) NOT NULL,
+    active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_department_local_code (department, local_service_code),
+    INDEX idx_mapping_nhif_item (nhif_item_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS nhif_preapprovals (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     patient_id BIGINT UNSIGNED NOT NULL,
@@ -112,7 +125,8 @@ CREATE TABLE IF NOT EXISTS nhif_claim_items (
     source_record_id BIGINT UNSIGNED NULL,
     FOREIGN KEY (claim_id) REFERENCES nhif_claims(id) ON DELETE CASCADE,
     INDEX idx_nci_claim (claim_id),
-    INDEX idx_nci_item (item_code)
+    INDEX idx_nci_item (item_code),
+    INDEX idx_nci_department (source_department)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS nhif_audit_log (

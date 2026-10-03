@@ -143,3 +143,81 @@ CREATE TABLE IF NOT EXISTS nhif_audit_log (
     INDEX idx_nal_visit (visit_id),
     INDEX idx_nal_date (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS nhif_visit_workflow (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    patient_id BIGINT UNSIGNED NOT NULL,
+    visit_id BIGINT UNSIGNED NOT NULL,
+    payment_mode VARCHAR(50) NOT NULL,
+    nhif_active TINYINT(1) NOT NULL DEFAULT 0,
+    workflow_status VARCHAR(30) NOT NULL DEFAULT 'PENDING_VERIFICATION',
+    started_by BIGINT UNSIGNED NULL,
+    started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_nhif_workflow_visit (visit_id),
+    INDEX idx_nw_patient (patient_id),
+    INDEX idx_nw_status (workflow_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS nhif_visit_profile (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    patient_id BIGINT UNSIGNED NOT NULL,
+    visit_id BIGINT UNSIGNED NOT NULL,
+    first_name VARCHAR(100) NULL,
+    last_name VARCHAR(100) NULL,
+    gender VARCHAR(30) NULL,
+    date_of_birth DATE NULL,
+    telephone_no VARCHAR(30) NULL,
+    patient_file_no VARCHAR(100) NULL,
+    patient_type_code VARCHAR(10) NOT NULL DEFAULT 'OUT',
+    attendance_date DATE NULL,
+    date_admitted DATE NULL,
+    date_discharged DATE NULL,
+    practitioner_no VARCHAR(100) NULL,
+    practitioner_name VARCHAR(200) NULL,
+    updated_by BIGINT UNSIGNED NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_nhif_profile_visit (visit_id),
+    INDEX idx_nvp_patient (patient_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS nhif_visit_diagnoses (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    patient_id BIGINT UNSIGNED NOT NULL,
+    visit_id BIGINT UNSIGNED NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    disease_code VARCHAR(50) NOT NULL,
+    notes VARCHAR(500) NULL,
+    practitioner_no VARCHAR(100) NULL,
+    created_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_nvd_visit (visit_id),
+    INDEX idx_nvd_disease (disease_code),
+    UNIQUE KEY uq_nhif_visit_disease (visit_id, disease_code, department)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS nhif_department_services (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    patient_id BIGINT UNSIGNED NOT NULL,
+    visit_id BIGINT UNSIGNED NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    local_service_code VARCHAR(100) NULL,
+    local_service_name VARCHAR(255) NULL,
+    nhif_item_code VARCHAR(50) NOT NULL,
+    item_name VARCHAR(255) NULL,
+    quantity DECIMAL(12,2) NOT NULL DEFAULT 1,
+    unit_price DECIMAL(18,2) NOT NULL DEFAULT 0,
+    amount_claimed DECIMAL(18,2) NOT NULL DEFAULT 0,
+    is_restricted TINYINT(1) NOT NULL DEFAULT 0,
+    approval_ref_no VARCHAR(100) NULL,
+    approval_status VARCHAR(30) NULL,
+    practitioner_no VARCHAR(100) NULL,
+    notes VARCHAR(500) NULL,
+    source_record_id BIGINT UNSIGNED NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'RECORDED',
+    created_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_nds_visit (visit_id),
+    INDEX idx_nds_department (department),
+    INDEX idx_nds_item (nhif_item_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

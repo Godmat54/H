@@ -98,3 +98,20 @@ Do not redesign the HTML/CSS template just to modernize PHP. Convert the shared 
 ## Production note
 
 Before go-live, confirm the current NHIF facility credentials, facility code, production endpoint/schema pack, diagnosis-code requirements, serial/folio rules, UAT access and any VPN/IP-whitelisting requirements directly with NHIF.
+
+## Professional NHIF workflow used in this package
+
+1. Reception registers the patient normally.
+2. When Payment Mode = NHIF, Reception/nhif_after_registration.php starts an NHIF workflow for that visit and opens the existing Facebox NHIF verification form.
+3. Accepted verification stores the Authorization Number and changes the visit to AUTHORIZED.
+4. Doctor/nhif_encounter.php maintains NHIF patient details and diagnosis on that same visit.
+5. Pharmacy, Lab, Dental and Eyes each use their nhif_encounter.php page to record synchronized NHIF ItemCodes, quantities, NHIF prices and approval references.
+6. Restricted items are blocked until their approval reference has been verified as VALID.
+7. Admin/nhif_finalize_claim.php automatically assembles the complete visit into the final folio using the patient profile, authorization, diagnoses and all recorded departmental services.
+8. Admin submits the eClaim and later reconciles it from the Admin NHIF dashboard.
+
+The package also includes integration/RECEPTION_AFTER_SAVE_EXAMPLE.php showing the small include that should be added after the existing Reception registration save succeeds.
+
+## Important source-merge note
+
+The uploaded FDSYS.zip is mounted in this conversation, but the local Python/container execution service returned a ClientError before it could list or extract the archive. Therefore this branch contains the complete drop-in NHIF/PHP 8.1 integration package and merge hooks, but the original FDSYS PHP files themselves have not been mechanically rewritten line-by-line in this environment. Do not interpret this package as proof that every legacy FDSYS page has already been linted under PHP 8.1.

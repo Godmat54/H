@@ -1,94 +1,100 @@
-# FARAJASYS NHIF / eClaims Complete Integration Project
+# FARAJASYS NHIF / eClaims Integration - PHP 8.1.25
 
-This project is built from the uploaded NHIF API Integration Guide | PHP 8.1.
+Target runtime: PHP 8.1.25.
 
-## Runtime
+This package follows the NHIF integration flow supplied for the hospital system and keeps the integration server-side so the existing Faraja template and Facebox popup forms can remain in use.
 
-- PHP 8.1 or newer; the code is written for current PHP 8.x.
-- cURL, JSON and MySQLi.
-- MySQL or MariaDB.
-- Existing Faraja Facebox/JQuery assets when embedded in the original hospital template.
+## Covered departments
 
-## Included workflow
+- Admin / Accounts
+- Reception
+- Doctor
+- Pharmacy
+- Laboratory (Lab folder)
+- Dental
+- Eyes
 
-Reception:
+## Reception
+
 - NHIF member authorization.
 - Normal, Emergency, Referral and Follow-up visit types.
-- Store AuthorizationStatus and AuthorizationNo.
-- Card-details lookup.
+- Stores AuthorizationStatus, AuthorizationNo, SchemeID and ProductCode.
+- NHIF card-details lookup.
 - Facebox-ready pages.
 
-Doctor:
+## Doctor
+
+- Uses the patient's NHIF authorization.
 - Restricted-service pre-approval verification.
 - NHIF patient referral.
-- Diagnosis/referral information captured in the hospital application.
+- Diagnosis/referral information linked to the visit.
 - Facebox-ready pages.
 
-Pharmacy:
-- Search synchronized NHIF ItemCode and ItemName.
-- Display NHIF UnitPrice.
-- Show restricted-service indicator.
-- Designed for the existing dispensing workflow.
+## Pharmacy, Laboratory, Dental and Eyes
 
-Admin / Accounts:
+Each department uses synchronized NHIF tariff data and the same patient authorization already created at Reception.
+
+The package provides:
+- NHIF ItemCode / ItemName lookup.
+- NHIF UnitPrice.
+- Scheme information.
+- Restricted-service indicator.
+- Approval-reference verification.
+- Audit logging by department.
+- nhif_service_mappings for mapping local service codes to NHIF ItemCode.
+
+## Admin / Accounts
+
 - NHIF/eClaims dashboard.
 - Tariff and excluded-service synchronization.
-- Build claim folio.
-- FolioDisease and FolioItem creation.
-- PDF patient-file Base64 attachment.
+- Claim folio construction.
+- FolioDisease and FolioItem rows.
+- Patient PDF Base64 attachment.
 - SubmitFolios.
-- Local claim list/status.
+- Local claim status list.
 - Monthly getSubmittedClaims reconciliation.
 - Audit log.
 
 ## Installation
 
-1. Back up the existing Faraja database and project.
-2. Use PHP 8.1+ with curl, json and mysqli.
-3. Configure the database using the variables shown in .env.example.
+1. Back up the existing Faraja project and database.
+2. Install/use PHP 8.1.25 with curl, json and mysqli enabled.
+3. Configure the database values shown in .env.example.
 4. Securely configure NHIF_USERNAME, NHIF_PASSWORD and NHIF_FACILITY_CODE.
-5. Never put production NHIF passwords in JavaScript, Git or printed reports.
-6. Run: php install.php
-7. Add the links in integration/FACEBOX_LINKS.html to the existing Reception, Doctor, Pharmacy and Admin menus.
-8. Replace generic patient_id, visit_id and session-user mappings with the exact variables/keys from the existing Faraja project.
-9. Synchronize the current NHIF tariffs.
-10. Use NHIF test/UAT credentials before production.
+5. Run: php install.php
+6. Add the Facebox/menu snippets in integration/FACEBOX_LINKS.html.
+7. Replace generic patient_id, visit_id and session-user mappings with the exact variables already used by the existing Faraja system.
+8. Synchronize NHIF tariffs from Admin.
+9. Map existing local services/medicines/tests/procedures to NHIF ItemCode using nhif_service_mappings.
+10. Test with NHIF-approved UAT/test credentials before production.
 
-## Existing-template integration
+## Existing template and Facebox
 
-The integration pages intentionally do not load a replacement hospital theme.
-When opened using the existing Faraja rel="facebox" links, they render inside the
-current Facebox popup so the original project styling/navigation can remain.
+The integration pages deliberately do not introduce a replacement hospital theme. Open them using the existing rel="facebox" links so forms continue to appear in the current popup style.
 
-Example link:
-<a rel="facebox" href="../Reception/nhif_verify.php?patient_id=PATIENT_ID&visit_id=VISIT_ID">NHIF Verify</a>
+## PHP 8.1.25 migration of old pages
 
-## Claims structure
+The original legacy pages should be checked for removed/deprecated PHP constructs before switching the hospital server:
 
-The claim page constructs FolioID, FacilityCode, ClaimYear, ClaimMonth, FolioNo,
-SerialNo, CardNo, patient demographics, AuthorizationNo, AttendanceDate,
-PatientTypeCode, admission/discharge fields, PractitionerNo, PatientFile as a
-Base64 PDF, FolioDiseases and FolioItems with ItemCode, ItemQuantity, UnitPrice,
-AmountClaimed and ApprovalRefNo.
+- mysql_* calls should be converted to MySQLi/PDO or a controlled compatibility layer.
+- old-style constructors.
+- each(), create_function(), ereg*.
+- unquoted array indexes.
+- curly-brace string/array offsets.
+- direct SQL concatenation from request data.
+- deprecated/undefined variable assumptions.
+
+Do not redesign the HTML/CSS template just to modernize PHP. Convert the shared database/runtime layer first and keep existing Facebox JavaScript/CSS.
 
 ## Security
 
-- All NHIF calls are server-side.
-- TLS peer/host verification remains enabled.
-- Credentials are loaded from environment configuration.
-- Local SQL writes use prepared statements.
-- API actions are written to nhif_audit_log.
-- Do not log passwords or bearer tokens.
-- Add the existing Faraja role/permission checks around supplied department pages.
+- NHIF API calls remain server-side.
+- TLS certificate verification remains enabled.
+- NHIF passwords are not placed in JavaScript or source-control examples.
+- Local inserts/updates use prepared statements.
+- API operations are written to nhif_audit_log.
+- Apply the existing Faraja role/session permission checks to the supplied pages.
 
-## Important production note
+## Production note
 
-The uploaded implementation guide states that it is not an NHIF-issued credential
-pack. Before live deployment, obtain current facility credentials, facility code,
-production approval, current endpoint requirements, official sample claim JSON
-and response examples, diagnosis coding requirements, serial/folio numbering
-rules and any UAT/VPN/IP-whitelisting requirements directly from NHIF.
-
-The guide also states that its public source documentation is marked 2021.
-Treat this package as the hospital-system implementation foundation and align it
-with the latest NHIF facility pack before production use.
+Before go-live, confirm the current NHIF facility credentials, facility code, production endpoint/schema pack, diagnosis-code requirements, serial/folio rules, UAT access and any VPN/IP-whitelisting requirements directly with NHIF.
